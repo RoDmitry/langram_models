@@ -1,0 +1,17 @@
+[package]
+name = "langram_models"
+version = "0.0.1"
+authors = ["Dmitry Rodionov <gh@rdmtr.com>"]
+description = "Langram models"
+repository = "https://github.com/RoDmitry/langram_models"
+include = ["src", "models"]
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+
+[lib]
+name = "langram_models"
+path = "src/lib.rs"
+
+[dependencies]
+include_dir = "0.7"
