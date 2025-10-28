@@ -9,9 +9,7 @@ readme = "README.md"
 license = "MIT OR Apache-2.0"
 edition = "2021"
 
-[lib]
-name = "langram_models"
-path = "src/lib.rs"
-
 [dependencies]
-include_dir = "0.7"
+langram = { path = "../langram" }
+rkyv = "0.8"
+threadpool = "1"
