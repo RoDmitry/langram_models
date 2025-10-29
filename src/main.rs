@@ -24,13 +24,14 @@ fn main() {
     for lang_dir in fs::read_dir(models_dir).unwrap() {
         let lang_dir = lang_dir.unwrap();
         let lang_dir_path = lang_dir.path();
-        let lang_name = lang_dir.file_name();
+        let lang_name = lang_dir.file_name().into_string().unwrap();
 
         let bin_storage_clone = bin_storage.clone();
         pool.execute(move || {
             if let Some(model) = dir_into_model(lang_dir_path).unwrap() {
                 let mut storage = bin_storage_clone.lock().unwrap();
-                storage.add(lang_name.into_string().unwrap(), model);
+                println!("{}", lang_name);
+                storage.add(lang_name, model);
             }
         });
     }
@@ -38,10 +39,15 @@ fn main() {
     pool.join();
 
     let mut bin_storage = bin_storage.lock().unwrap();
+    println!("Reordering...");
     bin_storage.reorder();
 
+    println!("To bytes...");
+    let bytes = bin_storage.to_bytes().unwrap();
+
+    println!("Saving...");
     let compiled_models_path = project_dir_path.join(BinStorage::FILE_NAME);
-    fs::write(compiled_models_path, bin_storage.to_bytes().unwrap()).unwrap();
+    fs::write(compiled_models_path, bytes).unwrap();
 
     println!("built in {:.2} sec", start.elapsed().as_secs_f64());
 }
