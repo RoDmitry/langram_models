@@ -4,7 +4,8 @@ use ::std::{
     sync::{Arc, Mutex},
     time::Instant,
 };
-use langram::{bin_storage::BinStorage, file_model::dir_into_model};
+use langram::bin_storage::BinStorage;
+use langram_train::file_model::dir_into_model;
 
 const THREADS: usize = 8;
 

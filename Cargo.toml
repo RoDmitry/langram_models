@@ -11,5 +11,5 @@ edition = "2021"
 
 [dependencies]
 langram = { path = "../langram" }
-rkyv = "0.8"
+langram_train = { path = "../langram/train" }
 threadpool = "1"
