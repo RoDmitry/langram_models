@@ -40,8 +40,8 @@ fn main() {
     pool.join();
 
     let mut bin_storage = bin_storage.lock().unwrap();
-    println!("Reordering...");
-    bin_storage.reorder();
+    println!("Finalizing...");
+    bin_storage.finalize();
 
     println!("To bytes...");
     let bytes = bin_storage.to_bytes().unwrap();

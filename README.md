@@ -4,8 +4,9 @@ You can download this repository, and remove some models ngrams locally (so that
 
 ```
 git clone https://github.com/RoDmitry/langram_models.git
-# set langram version in Cargo.toml
-# for big-endian targets enable `rkyv::big_endian` feature
+git clone https://github.com/RoDmitry/langram.git
+cd ./langram_models
+# for big-endian targets: in Cargo.toml enable `rkyv::big_endian` feature
 cargo run --release
 ```
 
