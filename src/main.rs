@@ -1,10 +1,11 @@
 use ::std::{
+    collections::HashMap,
     env, fs,
-    path::Path,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex},
     time::Instant,
 };
-use langram::bin_storage::BinStorage;
+use langram::{bin_storage::BinStorage, ScriptLanguage, UcdScript};
 use langram_train::file_model::dir_into_model;
 
 const THREADS: usize = 8;
@@ -22,19 +23,43 @@ fn main() {
     let pool = threadpool::ThreadPool::new(THREADS);
     let bin_storage = Arc::new(Mutex::new(BinStorage::default()));
 
+    let mut scripts_langs: HashMap<UcdScript, Vec<(ScriptLanguage, PathBuf)>> = HashMap::new();
     for lang_dir in fs::read_dir(models_dir).unwrap() {
         let lang_dir = lang_dir.unwrap();
         let lang_dir_path = lang_dir.path();
         let lang_name = lang_dir.file_name().into_string().unwrap();
 
-        let bin_storage_clone = bin_storage.clone();
-        pool.execute(move || {
-            if let Some(model) = dir_into_model(lang_dir_path).unwrap() {
-                let mut storage = bin_storage_clone.lock().unwrap();
-                println!("{}", lang_name);
-                storage.add(lang_name, model);
+        let Some(slang) = ScriptLanguage::from_str(&lang_name) else {
+            println!("{} Not found", lang_name);
+            continue;
+        };
+
+        let entry = scripts_langs.entry(UcdScript::from(slang)).or_default();
+        entry.push((slang, lang_dir_path));
+    }
+
+    for (script, langs) in scripts_langs {
+        if langs.len() == 1 {
+            let mut slangs = ScriptLanguage::all_with_script(script).to_vec();
+            slangs.sort();
+            let top_lang = *slangs.first().unwrap();
+            // skips single top lang
+            if langs.first().unwrap().0 == top_lang {
+                println!("Skipped {}", top_lang.into_str());
+                continue;
             }
-        });
+        }
+
+        for (l, path) in langs {
+            let bin_storage_clone = bin_storage.clone();
+            pool.execute(move || {
+                if let Some(model) = dir_into_model(path).unwrap() {
+                    let mut storage = bin_storage_clone.lock().unwrap();
+                    println!("{}", l.into_str());
+                    storage.add(l, model);
+                }
+            });
+        }
     }
 
     pool.join();
