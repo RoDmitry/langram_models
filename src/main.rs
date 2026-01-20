@@ -45,7 +45,7 @@ fn main() {
             let top_lang = *slangs.first().unwrap();
             // skips single top lang
             if langs.first().unwrap().0 == top_lang {
-                println!("Skipped {}", top_lang.into_str());
+                println!("{} Skipped single top lang in script", top_lang.into_str());
                 continue;
             }
         }
