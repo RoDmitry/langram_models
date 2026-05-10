@@ -5,7 +5,7 @@ use ::std::{
     sync::{Arc, Mutex},
     time::Instant,
 };
-use langram::{bin_storage::BinStorage, ScriptLanguage, UcdScript};
+use langram::{bin_storage::BinStorage, ModelsStorage, ScriptLanguage, UcdScript};
 use langram_train::file_model::dir_into_model;
 
 const THREADS: usize = 8;
@@ -72,7 +72,7 @@ fn main() {
     let bytes = bin_storage.to_bytes().unwrap();
 
     println!("Saving...");
-    let compiled_models_path = project_dir_path.join(BinStorage::FILE_NAME);
+    let compiled_models_path = project_dir_path.join(ModelsStorage::FILE_NAME);
     fs::write(compiled_models_path, bytes).unwrap();
 
     println!("built in {:.2} sec", start.elapsed().as_secs_f64());
